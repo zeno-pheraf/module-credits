@@ -6,10 +6,6 @@
 				"name": "Nombre de retours en arrière à conserver ?",
 				"hint": "Ce réglage indique le nombre de retours en arrière de modules que vous pouvez faire (entre 0 et 10). Si la valeur est à 0, cela conservera un nombre infini de retours en arrière. Il est suggéré de ne pas faire çà car cela causerait un surplus de données."
 			},
-			"disableLockedModules": {
-				"name": "Désactiver les modules verrouillés ?",
-				"hint": "Ce réglage désactivera la case à cocher des modules verrouillés. C'est utilisé pour empêcher de décocher un module verrouillé par accident."
-			},
 			"showNewChangelogsOnLoad": {
 				"name": "Montrer les changements nouveaux au chargement",
 				"hint": "Si un changement est marqué pour ne pas être montré et que ce réglage est activé, une fenêtre de dialogue apparaîtra montrant tous les changements que vous n'aurez pas marqué comme vus."
@@ -17,10 +13,6 @@
 			"bigPictureMode": {
 				"name": "Mode Grosse image",
 				"hint": "Activer cette fonctionnalité règlera les fenêtres de Module Management et de configuration des réglages à la taille totale de la fenêtre de Foundry."
-			},
-			"addGoogleSheetButton": {
-				"name": "Ajouter la spreadsheet Google",
-				"hint": "Si vous l'activez, cela ajoutera un lien avec la spreadsheet google à la fenêtre de Module management."
 			},
 			"disableSyncPrompt": {
 				"name": "Désactiver les demandes lorsque vous synchronisez les réglages",
@@ -55,14 +47,6 @@
 				"name": "Conserver le retour en arrière lorsque vous chargez un réglage",
 				"hint": "En cas d'activation, un retour à l'état initial sera créé lorsque vous activez un réglage ou lorsque vous importez un réglage"
 			},
-			"hideLockedSettings": {
-				"name": "Cacher les réglages verrouillés",
-				"hint": "Ce réglage cachera les réglages qui sont verrouillés pour les joueurs."
-			},
-			"enableGlobalConflicts": {
-				"name": "Activer Conflits globaux",
-				"hint": "Lorsque ce réglage est activé, MM+ ira chercher les conflits d'une google sheet disponible publiquement. Utiliser cette fonctionnalié signifie que Google recevra votre adresse IP. Si cela vous ennuie, désactiver cette fonctionnalité."
-			},
 			"showActiveModules": {
 				"choices": {
 					"hidden": "Caché",
@@ -83,8 +67,7 @@
 				"presets": "Gérer les réglages"
 			},
 			"moduleManagement": {
-				"lockedModules": "Modules verrouillés",
-				"rollback": "Revenir à la liste de modules précédente",
+                                "rollback": "Revenir à la liste de modules précédente",
 				"dependencies": {
 					"requires": "Requiert",
 					"optional": "Optionnel",
@@ -94,7 +77,7 @@
 					"headerTextEnable": "{title} possède {number} dépendances inactives qui pourraient ne plus être requises. Elles sont listées en dessous."
 				},
 				"buttons": {
-					"deactivateModules": "Désactiver tous les modules déverrouillés",
+                                        "deactivateModules": "Désactiver tous les modules",
 					"spreadsheet": "Spreadsheet Conflits globaux",
 					"deactivateModulesAlt": "Maintenir Ctrl pour désactiver tous les modules"
 				},
@@ -114,7 +97,6 @@
 					"managePresets": "Gérer les réglages",
 					"exportModules": "Exporter les modules",
 					"importModules": "Importer les modules",
-					"moduleLocked": "Ce module ne sera pas désactivé lorsque vous désactiverez les modules."
 				},
 				"tags": {
 					"socket": "Le module utilise le socket de l'API",
@@ -235,19 +217,10 @@
 				}
 			}
 		},
-		"migration": {
-			"v204": {
-				"starting": "Migration des réglages verrouillée. Attendez svp.",
-				"complete": "Migration à v2.0.3 est terminée et nécessite que vous rechargiez votre page."
-			},
-			"v212": {
-				"enableGlobalConflicts": "Voulez vous activer Conflits globaux ?",
-				"googleIPWarning": "Notez que MM+ ira chercher les conflits d'une page google publiquement disponible. Utiliser cette fonctionnalité signifie que Google recevra votre adresse IP. Si vous n'êtes pas à l'aise avec çà, n'activez pas cette fonctionnalité.",
-				"developersAreFriends": "Conflits globaux ne signifie pas que c'est une manière précise de pister les problèmes. Cela vous informe juste de la possibilité qu'ils peuvent exister. Les difficultés fournies par Conflits globaux pourraient être dépassées. Ne harcelez pas les développeurs avec les informations fournies par MM+."
-			},
-			"v214": {
-				"smartLabels": "Migrer Auto préfixer les Modules vers Étiquettes intelligentes. Cela va régler Étiquettes intelligentes à votre réglage Auto préfixer. Vous pouvez changer ces réglages dans la fenêtre de réglages."
-			}
-		}
-	}
+                "migration": {
+                        "v214": {
+                                "smartLabels": "Migrer Auto préfixer les Modules vers Étiquettes intelligentes. Cela va régler Étiquettes intelligentes à votre réglage Auto préfixer. Vous pouvez changer ces réglages dans la fenêtre de réglages."
+                        }
+                }
+        }
 }

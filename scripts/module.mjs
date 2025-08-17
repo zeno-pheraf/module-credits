@@ -1,7 +1,6 @@
 // GET REQUIRED LIBRARIES
 import './libraries/popper.min.js';
 import './libraries/tippy.umd.min.js';
-import './libraries/public-google-sheets-parser.min.js'
 
 // GET MODULE CORE
 import { MODULE } from './_module.mjs';
@@ -12,9 +11,7 @@ import { PresetDialog } from './dialogs/presets.mjs';
 
 // DEFINE MODULE CLASS
 export class MMP {
-	static socket = false;
-	static #LockedSettings = {};
-	static #GlobalConflicts = [];
+        static socket = false;
 
 	/* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
 	// MODULE SUPPORT CODE
@@ -89,10 +86,9 @@ export class MMP {
 	static init = () => {
 		this.installAPI();
 
-		this.getChangelogs();
+                this.getChangelogs();
 
-		if (game.user.isGM) MODULE.setting('storedRollback', {});
-		MMP.#LockedSettings = MODULE.setting('lockedSettings');
+                if (game.user.isGM) MODULE.setting('storedRollback', {});
 	}
 
 	/* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */
@@ -192,33 +188,6 @@ export class MMP {
 		}
 	}
 
-	static async globalConflicts() {
-		return new PublicGoogleSheetsParser().parse('1eRcaqt8VtgDRC-iWP3SfOnXh-7kIw2k7po9-3dcftAk').then((items) => {
-			let globalConflicts = [];
-			items.forEach(conflict => {
-				if (conflict?.['Module ID'] ?? false) {
-					if (
-						((conflict?.['Type']  ?? '').toLowerCase() == 'system' && game.system.id == (conflict?.['Package ID'] ?? '')) 
-						|| (conflict?.['Type'] ?? '').toLowerCase() != 'system'
-					) {
-						globalConflicts.push({
-							"id": conflict?.['Module ID'],
-							"packageId": conflict?.['Package ID'] ?? undefined,
-							"type": conflict?.['Type'] ?? false,
-							"manifest": conflict?.['Manifest URL'] ?? '',
-							"reason": conflict?.['Reason'] ?? '',
-							"compatibility": {
-								"minimum": conflict?.['Compatibility Minimum'] ?? '0.0.0',
-								"maximum": conflict?.['Compatibility Maximum'] ?? undefined,
-								"version": conflict?.['Compatibility Version'] ?? undefined
-							}
-						});
-					}
-				}
-			});
-			return globalConflicts;
-		});
-	}
 
 	static getModuleProperty(moduleID, property) {
 		if (property.lastIndexOf('.') == -1) property = '.' + property;
@@ -433,34 +402,17 @@ export class MMP {
 				//new ImportDialog({}).render(true);
 			});
 
-			// Convert Filters To Dropdown
-			if (elem.querySelectorAll(`nav.list-filters a.filter`)?.length > 0 ?? false) {
-				
-				let lastFilter = Array.from(elem.querySelectorAll('nav.list-filters a.filter')).pop();
-				let lockedCount = Object.keys(MODULE.setting('lockedModules')).length;
-				lastFilter.insertAdjacentHTML('afterend', `<a class="filter" data-filter="locked">${MODULE.localize('dialog.moduleManagement.lockedModules')} (${lockedCount})</a>`);
-				elem.querySelector('nav.list-filters a.filter[data-filter="locked"]').addEventListener('click', (event) => {
-					elem.querySelector('nav.list-filters a.filter.active').classList.remove('active');
-					event.target.classList.add('active');
-
-					elem.querySelectorAll(`.package-list .package`).forEach(elemPackage => {
-						elemPackage.classList.add('hidden');
-					});
-					
-					for (const [key, value] of Object.entries(MODULE.setting('lockedModules'))) {
-						elem.querySelector(`.package-list .package[data-module-id="${key}"]`).classList.remove('hidden');
-					}
-				})
-
-				elem.querySelector('nav.list-filters input[type="search"]').insertAdjacentHTML('afterend', `<select data-action="filter"></select>`);
-				elem.querySelectorAll('nav.list-filters a.filter').forEach(filterOpt => {
-					elem.querySelector('nav.list-filters select[data-action="filter"]').insertAdjacentHTML('beforeend', `<option value="${filterOpt.dataset.filter}">${filterOpt.innerHTML}</option>`)
-				});
-				elem.querySelector(`nav.list-filters select[data-action="filter"]`).value = elem.querySelector('nav.list-filters a.filter.active').dataset.filter;
-				elem.querySelector(`nav.list-filters select[data-action="filter"]`).addEventListener('change', event => {
-					elem.querySelector(`nav.list-filters a.filter[data-filter="${event.target.value}"]`).click();
-				})
-			}
+                        // Convert Filters To Dropdown
+                        if (elem.querySelectorAll(`nav.list-filters a.filter`)?.length > 0 ?? false) {
+                                elem.querySelector('nav.list-filters input[type="search"]').insertAdjacentHTML('afterend', `<select data-action="filter"></select>`);
+                                elem.querySelectorAll('nav.list-filters a.filter').forEach(filterOpt => {
+                                        elem.querySelector('nav.list-filters select[data-action="filter"]').insertAdjacentHTML('beforeend', `<option value="${filterOpt.dataset.filter}">${filterOpt.innerHTML}</option>`)
+                                });
+                                elem.querySelector(`nav.list-filters select[data-action="filter"]`).value = elem.querySelector('nav.list-filters a.filter.active').dataset.filter;
+                                elem.querySelector(`nav.list-filters select[data-action="filter"]`).addEventListener('change', event => {
+                                        elem.querySelector(`nav.list-filters a.filter[data-filter="${event.target.value}"]`).click();
+                                })
+                        }
 		}
 
 		// Get Modules with Settings
@@ -513,27 +465,6 @@ export class MMP {
 		}
 
 		// Add Conflicts
-		const conflictVersionCheck = (conflict) => {
-			let conflictVersion = false;
-			if ((conflict?.type ?? '').toLowerCase() == 'core') conflictVersion = game.version;
-			else if ((conflict?.type ?? '').toLowerCase() == 'system') conflictVersion = game.system.version;
-			else if ((conflict?.type ?? '').toLowerCase() == 'module') conflictVersion = game.modules.get(conflict.id)?.version ?? '0.0.0';
-
-			if (!conflictVersion) return false;
-
-			if ((conflict?.type ?? '').toLowerCase() == 'core' || (conflict?.type ?? '').toLowerCase() == 'system') {
-				if (foundry.utils.isNewerVersion((game.modules.get(conflict.id)?.version ?? '0.0.0'), (conflict.compatibility.version ?? '0.0.0'))) return false;
-				return (
-					(foundry.utils.isNewerVersion(conflictVersion, conflict.compatibility.minimum ?? '0.0.0') || conflictVersion == conflict.compatibility.minimum) 
-					&& (foundry.utils.isNewerVersion(conflict.compatibility.maximum ?? conflictVersion, conflictVersion) || (conflict.compatibility.maximum ?? conflictVersion) == conflictVersion)
-				) 
-			}
-
-			return (
-				(foundry.utils.isNewerVersion(conflictVersion, conflict.compatibility.minimum ?? '0.0.0') || conflictVersion == conflict.compatibility.minimum) 
-				&& (foundry.utils.isNewerVersion(conflict.compatibility.maximum, conflictVersion) || conflict.compatibility.maximum == conflictVersion)
-			) 
-		}
 
 		const addConflict = (module, conflict) => {
 			let conflictElem = elem.querySelector(`#module-list > li.package[data-module-id="${conflict.id}"]`) ?? false;
@@ -606,54 +537,12 @@ export class MMP {
 						new ModuleManagement().render(true);
 					})
 				})
-			}, {
-				name: MODULE.localize('dialog.moduleManagement.contextMenu.lockModule'),
-				icon: '<i class="fa-duotone fa-lock"></i>',
-				condition: () => game.user.isGM && !MODULE.setting('lockedModules').hasOwnProperty(moduleKey),
-				callback: (packageElem => {
-					let lockedModules = MODULE.setting('lockedModules');
-					lockedModules[moduleKey] = true;
-					MODULE.setting('lockedModules', lockedModules).then(response => {
-						packageElem[0].querySelector('.package-title input[type="checkbox"]').insertAdjacentHTML('afterend', `<i class="fa-duotone fa-lock" data-tooltip="${MODULE.localize('dialog.moduleManagement.tooltips.moduleLocked')}" style="margin-right: 0.25rem;"></i>`);
-							
-						if (MODULE.setting('disableLockedModules')) {
-							packageElem[0].querySelector('.package-title input[type="checkbox"]').disabled = true;
-							elemPackage.classList.add('disabled');
-						}
-						packageElem[0].querySelector('.package-title input[type="checkbox"]').checked = true;
-						packageElem[0].querySelector('.package-title input[type="checkbox"]').dispatchEvent(new Event('change'));
-
-						let lockedCount = Object.keys(MODULE.setting('lockedModules')).length;
-						elem.querySelector('nav.list-filters a.filter[data-filter="locked"]').innerHTML = `${MODULE.localize('dialog.moduleManagement.lockedModules')} (${lockedCount})`;
-						elem.querySelector('#module-management nav.list-filters select option[value="locked"]').innerHTML = `${MODULE.localize('dialog.moduleManagement.lockedModules')} (${lockedCount})`;
-					});
-				})
-			}, {
-				name: MODULE.localize('dialog.moduleManagement.contextMenu.unlockModule'),
-				icon: '<i class="fa-duotone fa-lock-open"></i>',
-				condition: () => game.user.isGM && MODULE.setting('lockedModules').hasOwnProperty(moduleKey),
-				callback: (packageElem => {
-					let lockedModules = MODULE.setting('lockedModules');
-					delete lockedModules[moduleKey];
-					MODULE.setting('lockedModules', lockedModules).then(response => {
-						packageElem[0].querySelector('.package-title i.fa-duotone.fa-lock').remove();
-							
-						if (MODULE.setting('disableLockedModules')) {
-							packageElem[0].querySelector('.package-title input[type="checkbox"]').disabled = false;
-							elemPackage.classList.remove('disabled');
-						}
-
-						let lockedCount = Object.keys(MODULE.setting('lockedModules')).length;
-						elem.querySelector('nav.list-filters a.filter[data-filter="locked"]').innerHTML = `${MODULE.localize('dialog.moduleManagement.lockedModules')} (${lockedCount})`;
-						elem.querySelector('#module-management nav.list-filters select option[value="locked"]').innerHTML = `${MODULE.localize('dialog.moduleManagement.lockedModules')} (${lockedCount})`;
-					});
-				})
-			}, {
-				name: MODULE.localize('dialog.moduleManagement.contextMenu.reportConflict'),
-				icon: '<i class="fa-solid fa-bug"></i>',
-				condition: () => game.user.isGM && (game.modules.get("bug-reporter")?.active ?? false),
-				callback: (packageElem => { 
-					const moduleDetails = game.modules.get(packageElem[0].closest('li').dataset.moduleId);
+                        }, {
+                                name: MODULE.localize('dialog.moduleManagement.contextMenu.reportConflict'),
+                                icon: '<i class="fa-solid fa-bug"></i>',
+                                condition: () => game.user.isGM && (game.modules.get("bug-reporter")?.active ?? false),
+                                callback: (packageElem => {
+                                        const moduleDetails = game.modules.get(packageElem[0].closest('li').dataset.moduleId);
 					Hooks.once('renderBugReportForm', (app, elem, options) => {
 						elem = elem[0];
 
@@ -929,27 +818,15 @@ export class MMP {
 				Object.values(ui.windows).find((window) => window.id === 'module-management')._expanded = isExpanded;
 			});
 
-			// Add Locked Status
-			if (MODULE.setting('lockedModules').hasOwnProperty(moduleKey) ?? false) {
-				elemPackage.querySelector('.package-overview .package-title input[type="checkbox"]').insertAdjacentHTML('afterend', `<i class="fa-duotone fa-lock" data-tooltip="${MODULE.localize('dialog.moduleManagement.tooltips.moduleLocked')}" style="margin-right: 0.25rem;"></i>`);
-				if (MODULE.setting('disableLockedModules')) {
-					elemPackage.querySelector('.package-overview .package-title input[type="checkbox"]').disabled = true;
-					elemPackage.classList.add('disabled');
-				}
-			}
-
-			// Handle Conflicts Registered in Manifest.json
-			if (moduleData?.relationships?.conflicts?.size > 0) {
-				moduleData?.relationships?.conflicts.forEach(conflict => {
-					// Version Checking
-					if (conflictVersionCheck(conflict)) {
-						if (conflict.id != moduleData.id) {
-							addConflict(game.modules.get(conflict.id), foundry.utils.mergeObject(conflict, { id: moduleData.id}, { inplace: false }));
-						}
-						addConflict(moduleData, conflict);
-					}
-				});
-			}
+                        // Handle Conflicts Registered in Manifest.json
+                        if (moduleData?.relationships?.conflicts?.size > 0) {
+                                moduleData.relationships.conflicts.forEach(conflict => {
+                                        if (conflict.id != moduleData.id) {
+                                                addConflict(game.modules.get(conflict.id), foundry.utils.mergeObject(conflict, { id: moduleData.id}, { inplace: false }));
+                                        }
+                                        addConflict(moduleData, conflict);
+                                });
+                        }
 
 			// Add Checked Class
 			if (moduleData?.active ?? false) {
@@ -960,29 +837,6 @@ export class MMP {
 			})
 		}
 
-		// Handle Global Conflicts
-		if (MODULE.setting('enableGlobalConflicts') && game.user.isGM) {
-			MMP.globalConflicts().then(response => {
-				response.forEach(conflict => {
-					// Version Checking
-					if (conflictVersionCheck(conflict)) {
-						if (conflict.id != (conflict?.packageId ?? '') && (conflict?.packageId ?? false)) {
-							addConflict(game.modules.get(conflict.id), foundry.utils.mergeObject(conflict, { id: conflict.packageId}, { inplace: false }));		
-						}
-						addConflict(game.modules.get(conflict?.packageId ?? conflict?.id), conflict);
-					}
-				})
-			});
-			if ((elem.querySelector('footer button[name="deactivate"]') ?? false) && MODULE.setting('addGoogleSheetButton')) {
-				elem.querySelector('footer button[name="deactivate"]').insertAdjacentHTML('afterend', `<button type="button" name="global-conflicts-spreadsheet">
-					<i class="fa-regular fa-table"></i> ${MODULE.localize('dialog.moduleManagement.buttons.spreadsheet')}
-				</button>`);
-				elem.querySelector('footer button[name="global-conflicts-spreadsheet"]').addEventListener('click', (event) => {
-					window.open("https://docs.google.com/spreadsheets/d/1eRcaqt8VtgDRC-iWP3SfOnXh-7kIw2k7po9-3dcftAk/", "_blank");
-				});
-			};
-		}
-		
 		// Handle if Settings Tag is Clicked
 		elem.querySelectorAll('#module-list > li.package .package-overview .tag.settings').forEach((elemPackage) => {
 			elemPackage.addEventListener('click', async (pointerEventData) => {
@@ -1011,19 +865,15 @@ export class MMP {
 			</span>${MODULE.localize('dialog.moduleManagement.buttons.deactivateModules')}`;
 			elem.querySelector('footer button[name="deactivate"]').dataset.tooltip = MODULE.localize('dialog.moduleManagement.buttons.deactivateModulesAlt');
 
-			elem.querySelector('footer button[name="deactivate"]').addEventListener('click', (event) => {
-				if (event.ctrlKey) {
-					MODULE.log('USER WAS HOLDING DOWN CONTROL KEY')
-				}else{
-					Array.from(elem.querySelectorAll('#module-list.package-list .package.checked')).forEach(elemPackage => {
-						elemPackage.classList.remove('checked');
-					})
-					for (const [key, value] of Object.entries(MODULE.setting('lockedModules'))) {
-						elem.querySelector(`.package-list .package[data-module-id="${key}"] input[type="checkbox"]`).checked = true;
-						elem.querySelector(`.package-list .package[data-module-id="${key}"]`).classList.add('checked');
-					}
-				}
-			});
+                        elem.querySelector('footer button[name="deactivate"]').addEventListener('click', (event) => {
+                                if (event.ctrlKey) {
+                                        MODULE.log('USER WAS HOLDING DOWN CONTROL KEY')
+                                }else{
+                                        Array.from(elem.querySelectorAll('#module-list.package-list .package.checked')).forEach(elemPackage => {
+                                                elemPackage.classList.remove('checked');
+                                        })
+                                }
+                        });
 		}
 
 		// Add Rollback || ONLY FOR GM
@@ -1091,13 +941,9 @@ export class MMP {
 
 			if (settingDetails ?? false) {
 				let settingLabel = settingElem.querySelector('label');
-				const settingID = settingValue ?? false;
-				// Lock Settings
-				const isLocked = (settingID) => {
-					return MMP.#LockedSettings.hasOwnProperty(`${(settingID ?? 'MMP-INVALID')}`) ?? false;
-				}
+                                const settingID = settingValue ?? false;
 
-				if (settingDetails.scope == "client" && game.user.isGM && settingID) {
+                                if (settingDetails.scope == "client" && game.user.isGM && settingID) {
 					settingLabel.insertAdjacentHTML('afterbegin', `<i class="fa-solid fa-user" data-tooltip="${MODULE.localize('dialog.clientSettings.tooltips.clientSetting')}" data-tooltip-direction="UP"></i>`);
 					if (this.socket) {
 						settingLabel.insertAdjacentHTML('afterbegin', `<i class="fa-solid fa-arrows-rotate" data-tooltip="${MODULE.localize('dialog.clientSettings.tooltips.syncSetting')}" data-tooltip-direction="UP" data-action="sync"></i>`);
@@ -1144,38 +990,7 @@ export class MMP {
 						new ContextMenu($(settingLabel), '[data-action="sync"]', getActiveUser());
 					}
 
-					if (!(game.modules.get('force-client-settings')?.active ?? false)) {
-						settingLabel.insertAdjacentHTML('afterbegin', `<i class="fa-solid fa-${isLocked(settingID) ? 'lock' : 'unlock'}" data-tooltip="${isLocked(settingID) ? MODULE.localize('dialog.clientSettings.tooltips.unlockSetting') : MODULE.localize('dialog.clientSettings.tooltips.lockSetting')}" data-tooltip-direction="UP" data-action="lock"></i>`);
-						settingLabel.querySelector('[data-action="lock"]').addEventListener('click', (event) => {
-							if (isLocked(settingID)) {
-								delete MMP.#LockedSettings[`${settingID}`];
-								MODULE.setting('lockedSettings', MMP.#LockedSettings).then(response => {
-									settingLabel.querySelector('[data-action="lock"]').classList.remove('fa-lock');
-									settingLabel.querySelector('[data-action="lock"]').classList.add('fa-unlock');
-									settingLabel.querySelector('[data-action="lock"]').dataset.tooltip = MODULE.localize('dialog.clientSettings.tooltips.lockSetting');
-								});
-							}else{
-								MMP.#LockedSettings[`${settingID}`] = game.settings.get(settingDetails.namespace, settingDetails.key);
-
-								MODULE.setting('lockedSettings', MMP.#LockedSettings).then(response => {
-									settingLabel.querySelector('[data-action="lock"]').classList.remove('fa-unlock');
-									settingLabel.querySelector('[data-action="lock"]').classList.add('fa-lock');
-									settingLabel.querySelector('[data-action="lock"]').dataset.tooltip = MODULE.localize('dialog.clientSettings.tooltips.unlockSetting');
-								})
-							}
-						});
-					}
-				}else if (settingDetails.scope == "client" && !game.user.isGM && !(game.modules.get('force-client-settings')?.active ?? false)) {
-					if (isLocked(settingID)) {
-						settingLabel.closest('.form-group').querySelectorAll('input, select, button').forEach(input => {
-							input.disabled = true;
-						});
-						settingLabel.insertAdjacentHTML('afterbegin', `<i class="fa-solid fa-lock" data-tooltip="${MODULE.localize('dialog.clientSettings.tooltips.lockSetting')}" data-tooltip-direction="UP" data-action="lock"></i>`);
-						if (MODULE.setting('hideLockedSettings')) {
-							settingLabel.closest('.form-group').classList.add('hidden');
-						}
-					}
-				}
+                                }
 				
 				if (settingDetails.scope == "world") {
 					settingLabel.insertAdjacentHTML('afterbegin', `<i class="fa-regular fa-earth-americas" data-tooltip="${MODULE.localize('dialog.clientSettings.tooltips.worldSetting')}" data-tooltip-direction="UP"></i>`);
@@ -1184,70 +999,6 @@ export class MMP {
 		})
 	}
 
-	static async renderApplication(app, elem, options) {
-		elem = elem[0];
-
-		if (app.id == 'client-settings') {
-			elem.querySelectorAll('.categories .category .form-group').forEach(settingElem => {
-				let settingDetails = null;
-				let settingValue = "UNKNOWN"
-				if (settingElem.querySelectorAll('input[name],select[name]').length > 0) {
-					settingValue = settingElem.querySelectorAll('input[name],select[name]')[0].getAttribute("name");
-				}else if (settingElem.querySelectorAll('button[data-key]').length > 0) {
-					settingValue = settingElem.querySelectorAll('button[data-key]')[0].dataset.key;
-				}
-				settingDetails = game.settings.settings.get(settingValue);
-
-				if (settingDetails ?? false) {
-					let settingLabel = settingElem.querySelector('label');
-					const settingID = settingValue ?? false;
-					// Lock Settings
-					const isLocked = (settingID) => {
-						return MODULE.setting('lockedSettings').hasOwnProperty(`${(settingID ?? 'MMP-INVALID')}`) ?? false;
-					}
-
-					if (settingDetails.scope == "client" && !game.user.isGM) {
-						settingLabel.closest('.form-group').querySelectorAll('input, select, button').forEach(input => {
-							input.disabled = isLocked(settingID);
-						});
-						if (isLocked(settingID)) {
-							if (!settingLabel.querySelector('[data-action="lock"]') ?? false) {
-								settingLabel.insertAdjacentHTML('afterbegin', `<i class="fa-solid fa-lock" data-tooltip="${MODULE.localize('dialog.clientSettings.tooltips.lockSetting')}" data-tooltip-direction="UP" data-action="lock"></i>`);
-							}
-						}else{
-							settingLabel.querySelector('[data-action="lock"]')?.remove() ?? false;
-						}
-
-						if (MODULE.setting('hideLockedSettings') && isLocked(settingID)) {
-							setTimeout(() => {
-								settingLabel.closest('.form-group').classList.add('hidden');
-							}, 300);
-						}
-					}
-				}
-			});
-		}
-	}
-
-	static async closeSettingsConfig(app, elem) {
-		if (game.user.isGM) {
-			for (const [key, value] of Object.entries(MMP.#LockedSettings)) {
-				const settingDetails = game.settings.settings.get(key);
-
-				// Check if Setting is Still Valid, Otherwise Remove it from the Locked Settings
-				// Fix provided by @PepijnMC (https://github.com/mouse0270/module-credits/issues/89#issue-1530854149)
-				if (settingDetails) {
-					MMP.#LockedSettings[`${key}`] = game.settings.get(settingDetails.namespace, settingDetails.key);
-				}else{
-					delete MMP.#LockedSettings[`${key}`];
-				}
-			}
-
-			MODULE.setting('lockedSettings', MMP.#LockedSettings).then(response => {
-				MODULE.log('UPDATED LOCKED SETTINGS', MMP.#LockedSettings);
-			});
-		}
-	}
 
 	static async renderSidebarTab (app, elem, options) {
 		if (app.options.id == "settings") {
