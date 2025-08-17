@@ -6,41 +6,18 @@ import { MMP } from './module.mjs';
 
 // FOUNDRY HOOKS -> SETUP
 Hooks.once('setup', () => {
-	// SET MODULE MIGRATE SETTINGS
-	MODULE.setting('register', 'enableGlobalConflicts', {
-		type: Boolean,
-		default: true,
-		config: false,
-		scope: 'world',
-	});
-	MODULE.setting('register', 'clientMigratedVersion', {
+        // SET MODULE MIGRATE SETTINGS
+        MODULE.setting('register', 'clientMigratedVersion', {
 		type: String,
 		default: "0.0.0",
 		scope: 'world',
 		config: false
 	});
-	MODULE.setting('register', 'worldMigratedVersion', {
+        MODULE.setting('register', 'worldMigratedVersion', {
 		type: String,
 		default: "0.0.0",
 		scope: 'world',
 		config: false
-	});
-	MODULE.setting('register', 'lockedSettings', {
-		type: Object,
-		default: {},
-		scope: 'world',
-		config: false,
-		onChange: async (settings) => {
-			if (!game.user.isGM) {
-				for (const [key, value] of Object.entries(settings)) {
-					const settingDetails = game.settings.settings.get(key);
-					await game.settings.set(settingDetails.namespace, settingDetails.key, value);
-				}
-				if (document.querySelector('#client-settings') ?? false) {
-					game.settings.sheet.render(true);
-				}
-			}
-		}
 	});
 	MODULE.setting('register', 'storePreviousOnPreset', {
 		type: Boolean,
@@ -56,14 +33,6 @@ Hooks.once('setup', () => {
 	MODULE.setting('register', 'presetsRollbacks', {
 		type: Array,
 		default: [],
-		scope: 'world',
-		config: false,
-	});
-	MODULE.setting('register', 'lockedModules', {
-		type: Object,
-		default: {
-			'module-credits': true
-		},
 		scope: 'world',
 		config: false,
 	});
@@ -91,16 +60,6 @@ Hooks.once('setup', () => {
 			}
 
 		}
-	});
-	MODULE.setting('register', 'disableLockedModules', {
-		type: Boolean,
-		default: false,
-		scope: 'world'
-	});
-	MODULE.setting('register', 'hideLockedSettings', {
-		type: Boolean,
-		default: true,
-		scope: 'world',
 	});
 	MODULE.setting('register', 'disableSyncPrompt', {
 		type: Boolean,
@@ -169,30 +128,14 @@ Hooks.once('setup', () => {
 		default: true,
 		config: true
 	}
-	const disableCoreConflicts = {
-		name: `${MODULE.ID}.settings.disableCoreConflicts.name`,
-		hint: `${MODULE.ID}.settings.disableCoreConflicts.hint`,
-		type: Boolean,
-		default: false,
-		scope: 'world',
-		config: false
-	}
-	const enableGlobalConflicts = {
-		name: `${MODULE.ID}.settings.enableGlobalConflicts.name`,
-		hint: `${MODULE.ID}.settings.enableGlobalConflicts.hint`,
-		type: Boolean,
-		default: false,
-		scope: 'world',
-		config: true
-	}
-	const addGoogleSheetButton = {
-		name: `${MODULE.ID}.settings.addGoogleSheetButton.name`,
-		hint: `${MODULE.ID}.settings.addGoogleSheetButton.hint`,
-		type: Boolean,
-		default: false,
-		scope: 'world',
-		config: true
-	}
+        const disableCoreConflicts = {
+                name: `${MODULE.ID}.settings.disableCoreConflicts.name`,
+                hint: `${MODULE.ID}.settings.disableCoreConflicts.hint`,
+                type: Boolean,
+                default: false,
+                scope: 'world',
+                config: false
+        }
 	const dependencyDialogType = {
 		name: `${MODULE.ID}.settings.dependencyDialogType.name`,
 		hint: `${MODULE.ID}.settings.dependencyDialogType.hint`,
@@ -209,28 +152,24 @@ Hooks.once('setup', () => {
 			SETTING(MODULE.ID, 'trackedChangelogs', trackedChangelogs);
 			SETTING(MODULE.ID, 'showNewChangelogsOnLoad', showNewChangelogsOnLoad);
 			SETTING(MODULE.ID, 'renamedModules', renamedModules);
-			SETTING(MODULE.ID, 'dependencyDialogType', dependencyDialogType);
-			SETTING(MODULE.ID, 'disableCoreConflicts', disableCoreConflicts);
-			SETTING(MODULE.ID, 'enableGlobalConflicts', enableGlobalConflicts);
-			SETTING(MODULE.ID, 'addGoogleSheetButton', addGoogleSheetButton);
-			SETTING(MODULE.ID, 'autoPrefixModules', autoPrefixModules);
-			SETTING(MODULE.ID, 'smartLabels', smartLabels);
-			SETTING(MODULE.ID, 'smartPrefix', smartPrefix);
-			SETTING(MODULE.ID, 'presets', presets);
-		});
-	}else{
-		MODULE.setting('register', 'trackedChangelogs', trackedChangelogs);
-		MODULE.setting('register', 'showNewChangelogsOnLoad', showNewChangelogsOnLoad);
-		MODULE.setting('register', 'renamedModules', renamedModules);
-		MODULE.setting('register', 'dependencyDialogType', dependencyDialogType);
-		MODULE.setting('register', 'disableCoreConflicts', disableCoreConflicts);
-		MODULE.setting('register', 'enableGlobalConflicts', enableGlobalConflicts);
-		MODULE.setting('register', 'addGoogleSheetButton', addGoogleSheetButton);
-		MODULE.setting('register', 'autoPrefixModules', autoPrefixModules);
-		MODULE.setting('register', 'smartLabels', smartLabels);
-		MODULE.setting('register', 'smartPrefix', smartPrefix);
-		MODULE.setting('register', 'presets', presets);
-	}
+                        SETTING(MODULE.ID, 'dependencyDialogType', dependencyDialogType);
+                        SETTING(MODULE.ID, 'disableCoreConflicts', disableCoreConflicts);
+                        SETTING(MODULE.ID, 'autoPrefixModules', autoPrefixModules);
+                        SETTING(MODULE.ID, 'smartLabels', smartLabels);
+                        SETTING(MODULE.ID, 'smartPrefix', smartPrefix);
+                        SETTING(MODULE.ID, 'presets', presets);
+                });
+        }else{
+                MODULE.setting('register', 'trackedChangelogs', trackedChangelogs);
+                MODULE.setting('register', 'showNewChangelogsOnLoad', showNewChangelogsOnLoad);
+                MODULE.setting('register', 'renamedModules', renamedModules);
+                MODULE.setting('register', 'dependencyDialogType', dependencyDialogType);
+                MODULE.setting('register', 'disableCoreConflicts', disableCoreConflicts);
+                MODULE.setting('register', 'autoPrefixModules', autoPrefixModules);
+                MODULE.setting('register', 'smartLabels', smartLabels);
+                MODULE.setting('register', 'smartPrefix', smartPrefix);
+                MODULE.setting('register', 'presets', presets);
+        }
 
 	// Handle Module Management Config onChange Event
 	game.settings.settings.set(`core.${ModuleManagement.CONFIG_SETTING}`, foundry.utils.mergeObject(game.settings.settings.get(`core.${ModuleManagement.CONFIG_SETTING}`), {

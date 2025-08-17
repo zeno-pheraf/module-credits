@@ -83,24 +83,13 @@ Hooks.once('ready', async () => {
 				if ((requirements.length ?? 0) > 0) return filtered.concat([]);
 			}
 
-			// Check if Requirement is already in same state as input
-			if (isEnabled(requirement.id) == input.checked) return filtered.concat([]);
+                        // Check if Requirement is already in same state as input
+                        if (isEnabled(requirement.id) == input.checked) return filtered.concat([]);
 
-			// Check if Requirement is Locked
-			//if (!input.checked && (MODULE.setting('lockedModules').hasOwnProperty(requirement.id) ?? false)) return filtered.concat([]);
-
-			MODULE.log(input.checked, !(MODULE.setting('lockedModules').hasOwnProperty(requirement.id) ?? false))
-			return filtered.concat([foundry.utils.mergeObject(requirement, {
-				title: game.modules.get(requirement?.id)?.title ?? '',
-				isChecked: () => {
-					if (input.checked) return true;
-					return !(MODULE.setting('lockedModules').hasOwnProperty(requirement.id) ?? false)
-				},
-				isDisabled: () => {
-					if (MODULE.setting('disableLockedModules') && (MODULE.setting('lockedModules').hasOwnProperty(requirement.id) ?? false)) return true;
-					return false;
-				}
-			}, { inplace: false })]);
+                        return filtered.concat([foundry.utils.mergeObject(requirement, {
+                                title: game.modules.get(requirement?.id)?.title ?? '',
+                                isChecked: () => input.checked
+                        }, { inplace: false })]);
 		}, []));
 
 		const requires = getValidRelationship(Array.from(module?.relationships?.requires ?? []), false);
@@ -165,15 +154,9 @@ Hooks.once('init', () => {
 	Hooks.on("renderSidebarTab", MMP.renderSidebarTab);
 });
 Hooks.once('ready', async () => {
-	//await MIGRATE.init();
-	
-	MMP.init();
-	
-	// Enable MM+ Locked Settings if FCS is inactive
-	if (!(game.modules.get('force-client-settings')?.active ?? false)) {
-		Hooks.on('renderApplication', MMP.renderApplication);
-		Hooks.on('closeSettingsConfig', MMP.closeSettingsConfig);
-	}
+        //await MIGRATE.init();
+
+        MMP.init();
 });
 
 /* ─────────────── ⋆⋅☆⋅⋆ ─────────────── */

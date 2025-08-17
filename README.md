@@ -13,15 +13,12 @@ The Features Included in MM+ Are
 - Export Module List with Settings
 - Import Module List (with support for import Tidy UI - Game Settings Export)
 - Sync a setting to all players (left clicking) or specfic player (right clicking)
-- Lock a setting, preventing players from adjusting it.
 - Converted Module Filter to Dropdown for Simplier look and feel.
 - Rename Modules to allow you to better organize your modules.
 - Auto Prefixing that will prefix module titles with their required modules for better sorting.
  - Please keep in mind that modules like `Levels` will be names `Wall Height - Levels` as `Levels` requires `Wall Height`
 - Smart Prefixing that will attempt to prefix modules with their type of group them together. For example, Library Modules will be prefixed with `Library - `, UI modules will be prefixed with `UI - ` and Map modules will be prefixed with `Maps - `
 - Added the ability to rollback to previous module load list. If you're like me and changing your module list alot, this lets you quickly enable a previous module list.
-- Global Conflicts using a google spreadsheet. This is an opt in feature. This new system handles for both core and system conflicts. Please keep in mind this system uses a publicly available google sheet. Using this feature will mean that Google will receive your IP address. If you are uncomfortable with this, turn off this feature. 
- - Please do not harass developers if the information in the Global Conflicts is outdated.
 - Expanded Module Dependencies
 
 ## Manage Modules
@@ -34,7 +31,7 @@ MM+ expands the Manage Module window by adding additional tags and functionality
 - A link to the modules website or issues pages.
 - If the module has any settings options, there will be a tag that will open up those specific settings.
 - Support for [🐛 Bug Reporter](https://foundryvtt.com/packages/bug-reporter), so if a module supports [🐛 Bug Reporter](https://foundryvtt.com/packages/bug-reporter) instead of opening the issues paage, you'll be presented with [🐛 Bug Reporter](https://foundryvtt.com/packages/bug-reporter) Dialog to submit a bug within foundry.
-- Adds the ability for you to view conflicts that may be listed by a module developer or via the Global Conflicts system, so you can quickly and see any issues that may be known.
+- Adds the ability for you to view conflicts that may be listed by a module developer, so you can quickly see any issues that may be known.
 - You can report a conflict when using [🐛 Bug Reporter](https://foundryvtt.com/packages/bug-reporter) by right Clicking on the module in the module management window and selecting `Report Conflict`
 
 ![image](https://user-images.githubusercontent.com/564874/192642397-50d2fbff-3382-4666-ac30-bd52369d7a4d.png)
@@ -55,30 +52,12 @@ This expands Foundry's Module Dependency Dialog:
 
 
 # Configure Settings
-MM+ adds icons to show if a setting is a `client` or `world` setting to make it easier for Game Masters to know which settings are which. It also adds the ability to lock a setting so that only Game Masters can change this setting. If you have [socketlib](https://github.com/manuelVo/foundryvtt-socketlib) active you will be able to sync a setting to all players by left clicking on the `Sync Setting` icon or to a specific player by right clicking on the `Sync Setting` icon and choosing an active player from the list, if not other players are logged in, right clicking will do nothing.
+MM+ adds icons to show if a setting is a `client` or `world` setting to make it easier for Game Masters to know which settings are which. If you have [socketlib](https://github.com/manuelVo/foundryvtt-socketlib) active you will be able to sync a setting to all players by left clicking on the `Sync Setting` icon or to a specific player by right clicking on the `Sync Setting` icon and choosing an active player from the list, if not other players are logged in, right clicking will do nothing.
 
 > Please note that the setting that gets synced is the **SAVED** setting. For example, if you enable an option by clicking the checkbox for that setting, but don't hit `Save Changes` it will send the **SAVED** value and not the currently displayed value of `true`. Please make sure to hit `Save Changes` before syncing settings. This feature may be adjusted in the future based on user feedback.
 
 ## Readme, Changelogs and Attributions
 MM+ provides a custom window inside foundry that will display these files content if provided. Making it easy to see what a modules does, what has changed, or any additional attributions the module author would like to include. MM+ provides support from grabbing remote content from GitHub if the user links to a file using that service.
-
-## Registering a Conflict
-With the release of MM+ v2+, conflicts have been moved from `flags.conflicts` to `relationships.conflicts` as this is the offical location for conflicts in FoundryVTT v10+. Registering a conflict now fits this scheme
-```
-	{
-		"id": "tidy-ui_game-settings",
-		"type": "module",
-		"manifest": "https://raw.githubusercontent.com/sdenec/tidy-ui_game-settings/master/module.json",
-		"reason": "Tidy UI and MM+ perform many of the same functions. MM+ will not be fixing compatibility issues between the two modules.",
-		"compatibility": {
-			"minimum": "0.0.0"
-			"maximum": undefined
-			"verified": undefined
-		}
-	}
-```
-
-> Please not that if not values in `compatibility` are defined than MM+ will always show the conflict. However if you define a `minimum` or `maximum` value MM+ will alow show the conflict if the conflicting module falls between those versions. `minimum` version is defaulted to `0.0.0`. If `maximum` is `undefined` then it will assume the module is conflicted if conflicting module version is greater than `minimum`.
 
 ## Supported Modules
 ### [🐛 Bug Reporter](https://foundryvtt.com/packages/bug-reporter)
@@ -97,6 +76,5 @@ Module Management+ supports importing module lists that were exported from [Tidy
 
 ## Credits
 Libraries used in creating Module Management+
-- [Tippy.js](https://atomiks.github.io/tippyjs/) 
-- [Popper.js](https://popper.js.org/) 
-- [Public Google Sheets Parser](https://github.com/fureweb-com/public-google-sheets-parser)
+- [Tippy.js](https://atomiks.github.io/tippyjs/)
+- [Popper.js](https://popper.js.org/)
