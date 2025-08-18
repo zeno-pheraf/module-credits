@@ -1030,17 +1030,18 @@ export class MMP {
 
 			// Cleanup General Information
 			elem[0].querySelector('#game-details li.build').classList.add('hidden');
-			elem[0].querySelector('#game-details li.version span').innerHTML = `${game.data.coreUpdate.hasUpdate ? `<i class="notification-pip update fas fa-exclamation-circle" data-action="core-update" data-tooltip="${game.i18n.format("SETUP.UpdateAvailable", {
-				type: game.i18n.localize("Software"),
-				channel: game.data.coreUpdate.channel,
-				version: game.data.coreUpdate.version
-			})}"></i> ` : ''}v${game.version}`;
-''
-			elem[0].querySelector(isNewerVersion(game.version, "11") ? '#game-details li.system span.system-info' : '#game-details li.system span').innerHTML = `${game.data.systemUpdate.hasUpdate ? `<i class="notification-pip update fas fa-exclamation-circle" data-action="system-update" data-tooltip="${game.i18n.format("SETUP.UpdateAvailable", {
-				type: game.i18n.localize("System"),
-				channel: game.data.system.title,
-				version: game.data.systemUpdate.version
-			})}"></i> ` : ''}v${game.system.version}`;
+                        elem[0].querySelector('#game-details li.version span').innerHTML = `${game.data.coreUpdate.hasUpdate ? `<i class="notification-pip update fas fa-exclamation-circle" data-action="core-update" data-tooltip="${game.i18n.format("SETUP.UpdateAvailable", {
+                                type: game.i18n.localize("Software"),
+                                channel: game.data.coreUpdate.channel,
+                                version: game.data.coreUpdate.version
+                        })}"></i> ` : ''}v${game.version}`;
+
+                        const systemInfo = elem[0].querySelector(isNewerVersion(game.version, "11") ? '#game-details li.system span.system-info' : '#game-details li.system span');
+                        if (systemInfo) systemInfo.innerHTML = `${game.data.systemUpdate.hasUpdate ? `<i class="notification-pip update fas fa-exclamation-circle" data-action="system-update" data-tooltip="${game.i18n.format("SETUP.UpdateAvailable", {
+                                type: game.i18n.localize("System"),
+                                channel: game.data.system.title,
+                                version: game.data.systemUpdate.version
+                        })}"></i> ` : ''}v${game.system.version}`;
 			
 			if (readme || changelog || attributions || license) {
 				elem[0].querySelector('#game-details li.system').insertAdjacentHTML('afterend', '<li class="system-buttons"></li>');

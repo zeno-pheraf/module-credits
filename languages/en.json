@@ -96,11 +96,6 @@
 				},
 				"tooltips": {
 					"managePresets": "Manage Presets",
-					"exportModules": "Export Modules",
-					"importModules": "Import Modules",
-				},
-				"tags": {
-					"socket": "Module uses Socket API",
 					"library": "Is a Library Module",
 					"authors": "Authors (click to view)",
 					"url": "View Website",

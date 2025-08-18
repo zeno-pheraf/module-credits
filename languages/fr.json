@@ -95,11 +95,6 @@
 				},
 				"tooltips": {
 					"managePresets": "Gérer les réglages",
-					"exportModules": "Exporter les modules",
-					"importModules": "Importer les modules",
-				},
-				"tags": {
-					"socket": "Le module utilise le socket de l'API",
 					"library": "Est un module bibliothèque",
 					"authors": "Auteurs",
 					"url": "Voir le site internet",
